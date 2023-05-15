@@ -1,6 +1,6 @@
 README.txt~
 README.md~
-mail/
+mail/__pycache__
 contacts/contact-book.json
 contacts/__pycache__
 meetings/meeting-book.json

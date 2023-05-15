@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from typing import List, Tuple, Any
+from typing import List, Tuple
 from models.taRemind_models import Contact, Meeting
 import util.contacts as c
 from meetings import meeting_db, MeetingQuery
@@ -128,12 +128,14 @@ def delete_participant(contact_position: int, meeting_position: int) -> None:
     contact_db.update({'participation': participation}, ContactQuery.position == contact_position)
 
 
-def read_participants(meeting_position: int) -> List[Tuple[str, str]]:
+def read_participants(meeting_position: int) -> Tuple[List[str], List[str]]:
     ind = meeting_position - 1
-    participants = []
+    participant_names = []
+    participant_emails = []
     results = contact_db.all()
     for result in results:
         participation_list = result['participation']
         if participation_list[ind]:
-            participants.append((result['first_name'], result['last_name']))
-    return participants
+            participant_names.append((result['first_name'], result['last_name']))
+            participant_emails.append(result['email_address'])
+    return participant_names, participant_emails

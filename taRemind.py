@@ -5,12 +5,13 @@ import datetime
 from models.taRemind_models import Contact, Meeting
 import util.contacts as c
 import util.meetings as m
+from mail import send_email
 import os
 from rich import print
 from rich.console import Console
 from rich.table import Table
 from typing_extensions import Annotated
-from typing import Tuple
+from typing import List
 
 console = Console()
 
@@ -171,7 +172,7 @@ def get_participants(position: int) -> None:
     """
     Get list of meeting participants.
     """
-    participants = m.read_participants(position)
+    participants, _ = m.read_participants(position)
     if not participants:
         print(f"[bold red]This meeting does not have any participants! It will be quite boring.[/bold red]")
     else:
@@ -198,6 +199,18 @@ def release_participant(contact_position: int, meeting_position: int) -> None:
     """
     print(f"Removing {contact_position} from {meeting_position}")
     m.delete_participant(contact_position, meeting_position)
+
+
+@app.command("send", short_help="Send an email reminder to meeting participants")
+def send_email(meeting_position: int):
+    meetings = m.read()
+    meeting_ind = meeting_position - 1
+    meeting_name = meetings[meeting_ind].meeting_name
+    meeting_time = meetings[meeting_ind].meeting_time
+    zoom_link = meetings[meeting_ind].zoom_link
+    passcode = meetings[meeting_ind].passcode
+    _, participant_emails = m.read_participants(meeting_position)
+    new_sendmail.send_email(meeting_name, meeting_time, zoom_link, participant_emails, passcode)
 
 
 if __name__ == "__main__":
