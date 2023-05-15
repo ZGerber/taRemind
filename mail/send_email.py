@@ -17,7 +17,7 @@ def send_email(meeting_name: str,
 
     subject = f'Reminder: {meeting_name}'
     body = f"""
-            Hello,
+            Hi everyone,
             
             This is a reminder that the {meeting_name} is today at {meeting_time} MDT over Zoom.
             
