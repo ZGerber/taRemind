@@ -1,0 +1,10 @@
+README.txt~
+README.md~
+mail/
+contacts/contact-book.json
+contacts/__pycache__
+meetings/meeting-book.json
+meetings/__pycache__
+sendgrid_api_key.txt
+util/__pycache__
+models/__pycache__
