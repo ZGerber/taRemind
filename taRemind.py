@@ -6,12 +6,11 @@ from models.taRemind_models import Contact, Meeting
 import util.contacts as c
 import util.meetings as m
 import os
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
 from rich import print
 from rich.console import Console
 from rich.table import Table
 from typing_extensions import Annotated
+from typing import Tuple
 
 console = Console()
 
@@ -36,9 +35,9 @@ app.add_typer(meetings_app, name="meetings", short_help="View or edit the meetin
 
 
 @contacts_app.command("add", short_help='Add a contact to contact book')
-def add_contact(first_name: str,
-                last_name: str,
-                email_address: str) -> None:
+def add_contact(first_name: Annotated[str, typer.Argument(help="First name of the person you wish to add")],
+                last_name: Annotated[str, typer.Argument(help="Last name of the person you wish to add")],
+                email_address: Annotated[str, typer.Argument(help="Email address of the person you wish to add")]) -> None:
     """
     Add a contact to the contact book. Required arguments are first name, last name, and email address.
     """
@@ -49,16 +48,11 @@ def add_contact(first_name: str,
 
 
 @meetings_app.command("add", short_help='Add a meeting to meeting book')
-# def add_meeting(meeting_name: Annotated[str, typer.Option(help="Name of the meeting")],
-#                 meeting_day: Annotated[str, typer.Option(help="Day of the week on which the meeting is held.")],
-#                 meeting_time: Annotated[str, typer.Option(help="Time at which the meeting is held (MDT).")],
-#                 zoom_link: Annotated[str, typer.Option(help="Zoom link for the meeting.")],
-#                 passcode: Annotated[int, typer.Option(help="Passcode for the Zoom meeting.")] = None) -> None:
-def add_meeting(meeting_name: str,
-                meeting_day: str,
-                meeting_time: str,
-                zoom_link: str,
-                passcode: int = None) -> None:
+def add_meeting(meeting_name: Annotated[str, typer.Argument(help="Name of the meeting")],
+                meeting_day: Annotated[str, typer.Argument(help="Day of the week on which the meeting is held.")],
+                meeting_time: Annotated[str, typer.Argument(help="Time at which the meeting is held (MDT).")],
+                zoom_link: Annotated[str, typer.Argument(help="Zoom link for the meeting.")],
+                passcode: Annotated[int, typer.Argument(help="Passcode for the Zoom meeting.")] = None) -> None:
     """
     Add a meeting to the meeting book. Required arguments are meeting name, meeting time, and Zoom link.
     Optional argument is passcode for zoom link.
@@ -114,7 +108,6 @@ def get_meetings() -> None:
                           f"{meeting.zoom_link}",
                           f"{meeting.passcode}")
         console.print(table)
-
 
 
 @contacts_app.command("edit", short_help='Edit a contact')
@@ -189,7 +182,8 @@ def get_participants(position: int) -> None:
 
 
 @meetings_app.command("assign", short_help="Assign contact to meeting as participant")
-def assign_participant(contact_position: int, meeting_position: int) -> None:
+def assign_participant(contact_position: int,
+                       meeting_position: int) -> None:
     """
     Assign a contact to a meeting. Contacts assigned to a meeting are "participants".
     """
