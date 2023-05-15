@@ -8,7 +8,7 @@ Zane Gerber
 
 ### Last Modified:
 
-May 10, 2023
+May 15, 2023
 
 ### Status:
 
@@ -20,13 +20,13 @@ Tested and working:
 
 * Participant management (assign, release, read)
 
+* Email creation (create and send emails to meeting participants)
+
 To do:
 
-* Documentation. Add help strings, annotations, etc. Make it pretty.
+* Documentation. 
 
-* Add functionality to send emails. This will be incorporated as a separate python module.
-The sending of emails depends on successful authentication of DNS records. CHPC has made the changes, and I am
-waiting for them to take effect.
+* Minor bug fixes
   
 ## Requirements:
 
@@ -44,23 +44,19 @@ pip install tinydb
 ```bash
 pip install rich
 ```
-* sendgrid 
-```bash
-pip install sendgrid
-```
 
-You will also need a Sendgrid API key. See Setup. (This is only necessary if sending emails).
+You will also need a Google 2FA password. See Setup. (This is only necessary if sending emails).
 
 ## Setup
 
-For sending emails from ta-remind@cosmic.utah.edu, the sendgrid API key has already been obtained (ask Zane). DO NOT DELETE this key without good reason. 
+For sending emails from ta-remind@cosmic.utah.edu, the Google 2FA key has already been obtained (ask Zane). DO NOT DELETE this password without good reason. 
 
-If you wish to use this program to send emails from some other domain, you will need a new Sendgrid account and API key.
+If you wish to use this program to send emails from some other domain, you will need a new Google account and 2FA key.
 
-You will need to set an environment variable to point the program to the API key file. Edit your ~/.bashrc file to include the following line:
+You will need to set an environment variable to point the program to the 2FA key file. Edit your ~/.bashrc file to include the following line:
 
 ```bash
-export SENDGRID_API_KEY=/full/path/to/taRemind/sendgrid_api_key.txt
+export GMAIL_PASSWORD="your_password"
 ```	
 
 Be sure to add the location of the program to PATH:
@@ -115,6 +111,8 @@ taRemind.py meetings assign 8 4
 ```
 
 This line would assign contact #8 to meeting #4.
+
+__I hope to improve this functionality by allowing the user to enter first/last name and meeting name instead of position__
 
 ## A good starting place:
 
