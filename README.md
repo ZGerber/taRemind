@@ -49,11 +49,9 @@ You will also need a Google 2FA password. See Setup. (This is only necessary if 
 
 ## Setup
 
-For sending emails from ta-remind@cosmic.utah.edu, the Google 2FA key has already been obtained (ask Zane). DO NOT DELETE this password without good reason. 
+This program is designed to send emails from any address, using Gmail as a relay service. This prevents emails from being flagged as spam. You will need a Google account and a 2FA key.
 
-If you wish to use this program to send emails from some other domain, you will need a new Google account and 2FA key.
-
-You will need to set an environment variable to point the program to the 2FA key file. Edit your ~/.bashrc file to include the following line:
+You will also need to set an environment variable to point the program to the 2FA key file. Edit your ~/.bashrc file to include the following line:
 
 ```bash
 export GMAIL_PASSWORD="your_password"
