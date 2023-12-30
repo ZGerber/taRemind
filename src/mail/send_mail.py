@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
 
-import math
-import os
-import sys
 from email.message import EmailMessage
 import ssl
 import smtplib
 from typing import List
 from datetime import datetime, timedelta
-
-SENDER = os.environ.get("TA_REMIND_EMAIL")
-PASSWORD = os.environ.get("GMAIL_PASSWORD")
 
 
 def get_day_of_week(meeting_day: str):
