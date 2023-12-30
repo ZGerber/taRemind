@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import calendar
 from rich import print
 from rich.table import Table
 from rich.prompt import Prompt as p
@@ -37,7 +38,7 @@ class Meeting(Database):
         """ Add a new meeting to the database
         """
         from participants.participant import Participant
-        meeting_name, meeting_day, meeting_time, zoom_link, zoom_id, passcode = UserPrompt.prompt("add_meeting")
+        meeting_name, meeting_day, meeting_time, zoom_link, zoom_id, passcode = UserPrompt.add_meeting()
         position = len(MeetingDatabase) + 1
         new_meeting = {
             'meeting_name': meeting_name,
@@ -56,7 +57,7 @@ class Meeting(Database):
         """ Remove a meeting from the database
         """
         from participants.participant import Participant
-        meeting = UserPrompt.prompt("delete_meeting")
+        meeting = UserPrompt.delete_meeting(self.get_names())
         if not meeting or meeting == 'list':
             self.display()
         else:
@@ -70,7 +71,7 @@ class Meeting(Database):
     def edit(self):
         """ Edit a meeting.
         """
-        meeting, attribute = UserPrompt.prompt("edit_meeting")
+        meeting, attribute = UserPrompt.edit_meeting(self.get_names(), self.meeting_attributes)
         if not meeting:
             self.display()
         else:

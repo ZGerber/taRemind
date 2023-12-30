@@ -12,9 +12,9 @@ class Participant:
     def display(self):
         """ Show all participants for a given meeting, or vice-versa.
         """
-        task = UserPrompt.prompt("participation_view")
+        task = UserPrompt.choose_participation_view()
         if task['name'] == "View all participants in a meeting":
-            meeting = UserPrompt.prompt("show_participants")
+            meeting = UserPrompt.show_participants_by_meeting(Meeting().get_names())
             imeeting = [Meeting().get_entry(name) - 1 for name in meeting['name']]
             for m, i in enumerate(imeeting):
                 print(f"[magenta]The following contacts are participants in the[/magenta] {meeting['name'][m]}:")
@@ -22,7 +22,7 @@ class Participant:
                 for name in participant_names:
                     print("\t" + name[0] + " " + name[1])
         elif task['name'] == "View all meetings for a participant":
-            person = UserPrompt.prompt("show_opposite")
+            person = UserPrompt.show_meeting_by_participant(Contact().get_names())
             participation = ContactDatabase.get((ContactQuery.first_name == person['name'].split()[0]) &
                                                 (ContactQuery.last_name == person['name'].split()[1]))['participation']
             print(f"{person['name']} [magenta]participates in the following meetings:[/magenta]")
@@ -56,7 +56,7 @@ class Participant:
     def assign() -> None:
         """ Assigns a contact as a meeting participant.
         """
-        person, meeting = UserPrompt.prompt("assign")
+        person, meeting = UserPrompt.assign(Contact().get_names(), Meeting().get_names())
         iperson = Contact().get_entry(person['name'])
         # Meetings are numbered starting from 1. List indices start from zero. Making sure to change the right meeting:
         imeeting = [Meeting().get_entry(name) - 1 for name in meeting['name']]
@@ -77,7 +77,7 @@ class Participant:
         then the value at the index corresponding to 'meeting_position' is checked. If True, change it.
         Otherwise, print an "OK" message. The program doesn't care if the user tries to remove what isn't there.
         """
-        person, meeting = UserPrompt.prompt("release")
+        person, meeting = UserPrompt.release(Contact().get_names(), Meeting().get_names())
         iperson = Contact().get_entry(person['name'])
         # Meetings are numbered starting from 1. List indices start from zero. Make sure to change the right meeting:
         imeeting = [Meeting().get_entry(name) - 1 for name in meeting['name']]

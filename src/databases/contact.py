@@ -35,7 +35,7 @@ class Contact(Database):
     def add(self):
         """ Add contact to the database
         """
-        first_name, last_name, email_address = UserPrompt.prompt("add_contact")
+        first_name, last_name, email_address = UserPrompt.add_contact()
         meeting_count = len(MeetingDatabase)
         position = len(ContactDatabase) + 1
         new_contact = {
@@ -52,7 +52,7 @@ class Contact(Database):
     def delete(self):
         """ Remove a contact from the database
         """
-        person = UserPrompt.prompt("delete_contact")
+        person = UserPrompt.delete_contact(self.get_names())
         if not person:
             self.display()
         else:
@@ -62,7 +62,7 @@ class Contact(Database):
             self.reset_positions(pos)
 
     def edit(self):
-        person, attribute = UserPrompt.prompt("edit_contact")
+        person, attribute = UserPrompt.edit_contact(self.get_names(), self.contact_attributes)
         if not person:
             self.display()
         else:
