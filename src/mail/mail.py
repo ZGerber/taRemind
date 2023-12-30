@@ -7,6 +7,19 @@ from typing import List
 from datetime import datetime, timedelta
 
 
+def email_body():
+    return f"""
+    Hi everyone,
+            
+    This is a reminder that the {meeting_name} is {weekday} at {meeting_time} MDT over Zoom.
+            
+    {zoom_link} 
+        
+    Meeting ID: {zoom_id}    
+    Passcode: {passcode}
+    """
+
+
 def get_day_of_week(meeting_day: str):
     """
     Some email reminders don't get sent on the day of the meeting. This function checks to see if meeting_day
@@ -31,16 +44,6 @@ def send_email(meeting_name: str,
                passcode: str = None) -> None:
 
     subject = f'Reminder: {meeting_name}'
-    body = f"""
-    Hi everyone,
-            
-    This is a reminder that the {meeting_name} is {weekday} at {meeting_time} MDT over Zoom.
-            
-    {zoom_link} 
-        
-    Meeting ID: {zoom_id}    
-    Passcode: {passcode}
-    """
 
     email = EmailMessage()
     email['From'] = SENDER

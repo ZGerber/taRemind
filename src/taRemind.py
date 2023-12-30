@@ -3,7 +3,7 @@ import typer
 from databases.contact import Contact
 from databases.meeting import Meeting
 from participants.participant import Participant
-# from mail.
+import mail as Email
 
 app = typer.Typer(add_completion=False, no_args_is_help=True,
                   context_settings=dict(help_option_names=['-h', '--help']),
@@ -82,7 +82,7 @@ def release() -> None:
 def send() -> None:
     """ Send an email reminder to meeting participants on a recurring basis.
     """
-    Email().send()
+    Email.send()
     mtgs = meetings.read()
     meeting_ind = meeting_position - 1
     meeting_name = mtgs[meeting_ind].meeting_name
