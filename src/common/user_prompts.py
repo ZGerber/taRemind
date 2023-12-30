@@ -3,7 +3,7 @@ from typing import List
 from rich import print
 import inquirer
 from databases import ContactQuery, ContactDatabase
-import calendar
+from common import get_weekdays
 
 """ 
 A collection of prompts from the Inquirer library. 
@@ -39,7 +39,7 @@ def add_meeting():
                  ask_checkbox("meeting_day",
                               message="On which day(s) of the week will the meeting occur? "
                                       "(Use SPACE to select/deselect and ENTER to proceed)",
-                              choices=list(calendar.day_name))[0],
+                              choices=get_weekdays())[0],
                  ask_text("meeting_time",
                           message="Enter the TIME at which the meeting will be held [HH:MM (24-hour clock)]")[0],
                  ask_text("zoom_link",
@@ -102,7 +102,7 @@ def choose_participation_view():
     return inquirer.prompt(which)
 
 
-def confirm(action: str, *args) -> None:
+def confirm(action: str, *args):
     """
     Ask the user to confirm their input. The input parameter 'action' determines which request is sent.
     """
@@ -140,7 +140,7 @@ def ask_list(key: str, message: str, choices: List[str]):
     return [inquirer.List(key, message=message, choices=choices)]
 
 
-def ask_checkbox(key: str, message: str, choices: List[str]) -> object:
+def ask_checkbox(key: str, message: str, choices: List[str]):
     """ Ask the user to select at least one option from a list.
     """
     return [inquirer.Checkbox(key, message=message, choices=choices)]

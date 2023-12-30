@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import calendar
 from rich import print
 from rich.table import Table
 from rich.prompt import Prompt as p
 from typing import List, Union
 import common.user_prompts as UserPrompt
+from common import get_weekdays
 from databases.database import Database
 from dataclasses import dataclass, field
 from databases import MeetingQuery, MeetingDatabase, console
@@ -81,7 +81,7 @@ class Meeting(Database):
                                        MeetingQuery.position == pos)
             elif attribute['attribute'] == "Meeting Day":
                 MeetingDatabase.update({'meeting_day': p.ask("Enter the new Meeting Day",
-                                                             choices=list(calendar.day_name))},
+                                                             choices=get_weekdays())},
                                        MeetingQuery.position == pos)
             elif attribute['attribute'] == "Meeting Time":
                 MeetingDatabase.update({'meeting_time': p.ask("Enter the new Meeting Time")},
