@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-from email.message import EmailMessage
-import reminders
-import ssl
 import smtplib
-from typing import List, Dict
+import ssl
 from datetime import datetime, timedelta
-from participants.participant import Participant
-from databases import MeetingDatabase, MeetingQuery
-from databases.meeting import Meeting
+from email.message import EmailMessage
+from typing import List
+
+import reminders
 from common import user_prompts as UserPrompt
+from databases import MeetingDatabase, MeetingQuery
+from databases.meeting_class import Meeting
+from participants.participant_class import Participant
 
 
 def get_meeting_name(position: int) -> str:
@@ -101,12 +102,13 @@ def create_email(position: int):
 def send_email(position: int):
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as smtp:
         smtp.login(reminders.EmailInfo.SENDER, reminders.EmailInfo.PASSWORD)
-        # smtp.sendmail(reminders.EmailInfo.SENDER, recipients(), create_email())
-    print(f"{get_meeting_name(position)} email sent: {datetime.now().year}/{datetime.now().month}/{datetime.now().day} at "
-          f"{datetime.now().hour}:{datetime.now().minute}:{datetime.now().second}")
+        # smtp.sendmail(reminders.EmailInfo.SENDER, recipients(position), create_email(position))
+    print(f"{get_meeting_name(position)} email sent: {datetime.now().year}/{datetime.now().month}/{datetime.now().day} "
+          f"at {datetime.now().hour}:{datetime.now().minute}:{datetime.now().second}")
 
 
-def remind() -> Dict:
-    meeting = UserPrompt.create_reminder(Meeting().get_names())
+def remind():
+    meeting, reminder_day, reminder_time = UserPrompt.create_reminder(Meeting().get_names())
     meeting_position = Meeting().get_position(meeting['name'])
+    # This needs to be called by the scheduler!
     send_email(meeting_position)

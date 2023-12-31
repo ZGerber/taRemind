@@ -1,7 +1,9 @@
 #!/usr/bin python3
-from tinydb import TinyDB, Query
 from pathlib import Path
+
 from rich.console import Console
+from tinydb import TinyDB, Query
+
 """
 Initializes the databases using TinyDB.
 """

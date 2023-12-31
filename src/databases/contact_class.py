@@ -1,14 +1,16 @@
 #!/usr/bin python3
 
-import typer
-import common.user_prompts as UserPrompt
-from typing import List
 from dataclasses import dataclass, field
-from databases.database import Database
-from databases import ContactQuery, ContactDatabase, MeetingDatabase, console
+from typing import List
+
+import typer
+from rich import print
 from rich.prompt import Prompt as p
 from rich.table import Table
-from rich import print
+
+import common.user_prompts as UserPrompt
+from databases import ContactQuery, ContactDatabase, MeetingDatabase, console
+from databases.database_class import Database
 
 
 @dataclass
@@ -89,8 +91,8 @@ class Contact(Database):
         else:
             first_name = entry.split()[0]
             last_name = entry.split()[1]
-            position = ContactDatabase.get((ContactQuery.first_name == first_name
-                                            and ContactQuery.last_name == last_name))['position']
+            position = ContactDatabase.get((ContactQuery.first_name == first_name) &
+                                           (ContactQuery.last_name == last_name))['position']
         if not position:
             print("[red]ERROR: Invalid entry.[/red]")
             raise typer.Exit()

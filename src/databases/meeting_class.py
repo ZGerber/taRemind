@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-from rich import print
-from rich.table import Table
-from rich.prompt import Prompt as p
+from dataclasses import dataclass, field
 from typing import List, Union
+
+from rich import print
+from rich.prompt import Prompt as p
+from rich.table import Table
+
 import common.user_prompts as UserPrompt
 from common import get_weekdays
-from databases.database import Database
-from dataclasses import dataclass, field
 from databases import MeetingQuery, MeetingDatabase, console
+from databases.database_class import Database
 
 
 @dataclass
@@ -37,7 +39,7 @@ class Meeting(Database):
     def add(self):
         """ Add a new meeting to the database
         """
-        from participants.participant import Participant
+        from participants.participant_class import Participant
         meeting_name, meeting_day, meeting_time, zoom_link, zoom_id, passcode = UserPrompt.add_meeting()
         position = len(MeetingDatabase) + 1
         new_meeting = {
@@ -56,7 +58,7 @@ class Meeting(Database):
     def delete(self):
         """ Remove a meeting from the database
         """
-        from participants.participant import Participant
+        from participants.participant_class import Participant
         meeting = UserPrompt.delete_meeting(self.get_names())
         if not meeting or meeting == 'list':
             self.display()

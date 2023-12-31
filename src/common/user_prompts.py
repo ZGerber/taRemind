@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-from typing import List
-from rich import print
+from typing import List, Dict, Tuple
+
 import inquirer
-from databases import ContactQuery, ContactDatabase
+from rich import print
+
 from common import get_weekdays
+from databases import ContactQuery, ContactDatabase, MeetingQuery, MeetingDatabase
 
 """ 
-A collection of prompts from the Inquirer library. 
-Used to collect and/or confirm information from the user.
+A collection of prompts from the Inquirer library. Used to collect information from the user.
 """
 
 
-def add_contact():
+def add_contact() -> Tuple:
     questions = [ask_text("first_name",
                           message="Enter the FIRST name of the new contact"),
                  ask_text("last_name",
@@ -22,7 +23,7 @@ def add_contact():
     return answers['first_name'], answers['last_name'], answers['email_address']
 
 
-def delete_contact(names: List[str]):
+def delete_contact(names: List[str]) -> Dict:
     who = ask_list("name", "Which contact would you like to delete? (Choose one)", names)
     return inquirer.prompt(who)
 
@@ -36,20 +37,25 @@ def edit_contact(names: List[str], attributes: List[str]):
 def add_meeting():
     questions = [ask_text("meeting_name",
                           message="Enter the NAME of the new meeting"),
-                 ask_checkbox("meeting_day",
-                              message="On which day(s) of the week will the meeting occur? "
-                                      "(Use SPACE to select/deselect and ENTER to proceed)",
-                              choices=get_weekdays())[0],
+                 ask_list("meeting_day",
+                          message="On which day of the week will the meeting occur?",
+                          choices=get_weekdays())[0],
                  ask_text("meeting_time",
                           message="Enter the TIME at which the meeting will be held [HH:MM (24-hour clock)]"),
                  ask_text("zoom_link",
-                          message="Enter the ZOOM LINK at which the meeting will be held "
-                                  "(This should be a recurring meeting)"),
+                          message="Enter the ZOOM LINK at which the meeting will be held (default=None)"),
                  ask_text("zoom_id",
-                          message="Enter the ZOOM ID for the meeting"),
+                          message="Enter the ZOOM ID for the meeting (default=None)"),
                  ask_text("passcode",
-                          message="Enter the ZOOM PASSCODE for the meeting")]
+                          message="Enter the ZOOM PASSCODE for the meeting (default=None)")]
     answers = inquirer.prompt(questions)
+    # try:
+    #     meeting_time = datetime.datetime.strptime(answers["meeting_time"], "%H%M")
+    #     print(meeting_time.strftime("%H%M"))
+    # except:
+    #     print("Please enter correct time in HHMM format")
+    #     sys.exit()
+
     return answers["meeting_name"], answers["meeting_day"], answers["meeting_time"], \
         answers["zoom_link"], answers["zoom_id"], answers["passcode"]
 
@@ -69,9 +75,7 @@ def assign(names: List[str], meetings: List[str]):
     who = ask_list("name", "Choose a contact", names)
     person = inquirer.prompt(who)
     which = ask_checkbox("name", f"Which meeting(s) would you like to assign {person['name']} to? "
-                                 f"(Use SPACE to select and ENTER to proceed)",
-                         meetings)
-
+                                 f"(Use SPACE to select and ENTER to proceed)", meetings)
     meeting = inquirer.prompt(which)
     return person, meeting
 
@@ -103,8 +107,16 @@ def choose_participation_view():
 
 
 def create_reminder(meetings: List[str]):
-    which = ask_list('name', "Which meeting would you like to set up a reminder for?", meetings)
-    return inquirer.prompt(which)
+    meeting = inquirer.prompt(ask_list('name', "Which meeting would you like to set up a reminder for?", meetings))
+    meeting_time = MeetingDatabase.get(MeetingQuery.meeting_name == meeting['name'])['meeting_time']
+    meeting_day = MeetingDatabase.get(MeetingQuery.meeting_name == meeting['name'])['meeting_day']
+    questions = [ask_list('day', f"The {meeting['name']} occurs on {meeting_day} at {meeting_time}. "
+                                 f"On what day would you like the reminder to be sent?",
+                          get_weekdays())[0],
+                 ask_text('time', f"Enter the time when the reminder email should be sent "
+                                  f"[HH:MM (24-hour clock)]")]
+    answers = inquirer.prompt(questions)
+    return meeting, answers['day'], answers['time']
 
 
 def confirm(action: str, *args):

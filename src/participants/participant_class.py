@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import common.user_prompts as UserPrompt
-from databases.meeting import Meeting
-from databases.contact import Contact
-from databases import ContactQuery, MeetingQuery, ContactDatabase, MeetingDatabase
 from rich import print
+
+import common.user_prompts as UserPrompt
+from databases import ContactQuery, MeetingQuery, ContactDatabase, MeetingDatabase
+from databases.contact_class import Contact
+from databases.meeting_class import Meeting
 
 
 class Participant:

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import typer
-from databases.contact import Contact
-from databases.meeting import Meeting
-from participants.participant import Participant
-import reminders.reminder_email as Email
-import reminders.scheduler as Scheduler
+
+import reminders.reminder_class as Remind
+from databases.contact_class import Contact
+from databases.meeting_class import Meeting
+from participants.participant_class import Participant
 
 app = typer.Typer(add_completion=False, no_args_is_help=True,
                   context_settings=dict(help_option_names=['-h', '--help']),
@@ -83,7 +83,7 @@ def release() -> None:
 def remind() -> None:
     """ Schedule an email reminder that will be sent to meeting participants.
     """
-    Email.remind()
+    Remind.remind()
 
 
 if __name__ == "__main__":
