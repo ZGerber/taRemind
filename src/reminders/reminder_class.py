@@ -102,13 +102,12 @@ def create_email(position: int):
 def send_email(position: int):
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as smtp:
         smtp.login(reminders.EmailInfo.SENDER, reminders.EmailInfo.PASSWORD)
-        # smtp.sendmail(reminders.EmailInfo.SENDER, recipients(position), create_email(position))
+        smtp.sendmail(reminders.EmailInfo.SENDER, recipients(position), create_email(position))
     print(f"{get_meeting_name(position)} email sent: {datetime.now().year}/{datetime.now().month}/{datetime.now().day} "
           f"at {datetime.now().hour}:{datetime.now().minute}:{datetime.now().second}")
 
 
 def remind():
-    meeting, reminder_day, reminder_time = UserPrompt.create_reminder(Meeting().get_names())
+    meeting, meeting_day, meeting_time, reminder_day, reminder_time = UserPrompt.create_reminder(Meeting().get_names())
     meeting_position = Meeting().get_position(meeting['name'])
-    # This needs to be called by the scheduler!
-    send_email(meeting_position)
+    reminders.r

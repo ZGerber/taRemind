@@ -116,7 +116,7 @@ def create_reminder(meetings: List[str]):
                  ask_text('time', f"Enter the time when the reminder email should be sent "
                                   f"[HH:MM (24-hour clock)]")]
     answers = inquirer.prompt(questions)
-    return meeting, answers['day'], answers['time']
+    return meeting, meeting_day, meeting_time, answers['day'], answers['time']
 
 
 def confirm(action: str, *args):
