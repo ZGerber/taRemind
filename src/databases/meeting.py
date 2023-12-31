@@ -61,7 +61,7 @@ class Meeting(Database):
         if not meeting or meeting == 'list':
             self.display()
         else:
-            pos = self.get_entry(meeting['name'])
+            pos = self.get_position(meeting['name'])
             meeting_name = MeetingDatabase.get(MeetingQuery.position == pos)['meeting_name']
             MeetingDatabase.remove(MeetingQuery.position == pos)
             print(f"[magenta]Removed meeting:[/magenta] {meeting_name}")
@@ -75,13 +75,12 @@ class Meeting(Database):
         if not meeting:
             self.display()
         else:
-            pos = self.get_entry(meeting['name'])
+            pos = self.get_position(meeting['name'])
             if attribute['attribute'] == "Meeting Name":
                 MeetingDatabase.update({'meeting_name': p.ask("Enter the new Meeting Name")},
                                        MeetingQuery.position == pos)
             elif attribute['attribute'] == "Meeting Day":
-                MeetingDatabase.update({'meeting_day': p.ask("Enter the new Meeting Day",
-                                                             choices=get_weekdays())},
+                MeetingDatabase.update({'meeting_day': p.ask("Enter the new Meeting Day", choices=get_weekdays())},
                                        MeetingQuery.position == pos)
             elif attribute['attribute'] == "Meeting Time":
                 MeetingDatabase.update({'meeting_time': p.ask("Enter the new Meeting Time")},
@@ -98,7 +97,7 @@ class Meeting(Database):
         return
 
     @staticmethod
-    def get_entry(entry: Union[str, int]) -> int:
+    def get_position(entry: Union[str, int]) -> int:
         """ Gets a single entry from the meeting database. Returns the position number of that entry.
         Can accept either MEETING NAME or POSITION.
         """
@@ -151,3 +150,9 @@ class Meeting(Database):
         """ Return a list of all meeting names
         """
         return [result['meeting_name'] for result in self.query()]
+
+    # def get_meeting_details(self, meeting_number: int):
+    #     """ Access a meeting in the database and return all the information about it.
+    #     """
+    #     # meeting_name =
+    #     position = MeetingDatabase.get(MeetingQuery.meeting_name == name_string.strip())['position']

@@ -3,7 +3,8 @@ import typer
 from databases.contact import Contact
 from databases.meeting import Meeting
 from participants.participant import Participant
-import mail as Email
+import reminders.reminder_email as Email
+import reminders.scheduler as Scheduler
 
 app = typer.Typer(add_completion=False, no_args_is_help=True,
                   context_settings=dict(help_option_names=['-h', '--help']),
@@ -78,23 +79,11 @@ def release() -> None:
     Participant().release()
 
 
-@app.command("send")
-def send() -> None:
-    """ Send an email reminder to meeting participants on a recurring basis.
+@app.command("remind")
+def remind() -> None:
+    """ Schedule an email reminder that will be sent to meeting participants.
     """
-    Email.send()
-    mtgs = meetings.read()
-    meeting_ind = meeting_position - 1
-    meeting_name = mtgs[meeting_ind].meeting_name
-    meeting_day = mtgs[meeting_ind].meeting_day
-    meeting_time = mtgs[meeting_ind].meeting_time
-    zoom_link = mtgs[meeting_ind].zoom_link
-    zoom_id = mtgs[meeting_ind].zoom_id
-    passcode = mtgs[meeting_ind].passcode
-    _, participant_emails = meetings.read_participants(meeting_position)
-
-    weekday = send_mail.get_day_of_week(meeting_day)
-    send_mail.send_email(meeting_name, meeting_time, weekday, zoom_link, zoom_id, participant_emails, passcode)
+    Email.remind()
 
 
 if __name__ == "__main__":

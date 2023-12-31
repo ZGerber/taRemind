@@ -15,7 +15,7 @@ class Participant:
         task = UserPrompt.choose_participation_view()
         if task['name'] == "View all participants in a meeting":
             meeting = UserPrompt.show_participants_by_meeting(Meeting().get_names())
-            imeeting = [Meeting().get_entry(name) - 1 for name in meeting['name']]
+            imeeting = [Meeting().get_position(name) - 1 for name in meeting['name']]
             for m, i in enumerate(imeeting):
                 print(f"[magenta]The following contacts are participants in the[/magenta] {meeting['name'][m]}:")
                 participant_names, _ = self.get_participants(i + 1)
@@ -57,9 +57,9 @@ class Participant:
         """ Assigns a contact as a meeting participant.
         """
         person, meeting = UserPrompt.assign(Contact().get_names(), Meeting().get_names())
-        iperson = Contact().get_entry(person['name'])
+        iperson = Contact().get_position(person['name'])
         # Meetings are numbered starting from 1. List indices start from zero. Making sure to change the right meeting:
-        imeeting = [Meeting().get_entry(name) - 1 for name in meeting['name']]
+        imeeting = [Meeting().get_position(name) - 1 for name in meeting['name']]
         participation = ContactDatabase.search((ContactQuery['position'] == iperson))[0]['participation']
         for m, i in enumerate(imeeting):
             if participation[i]:
@@ -78,9 +78,9 @@ class Participant:
         Otherwise, print an "OK" message. The program doesn't care if the user tries to remove what isn't there.
         """
         person, meeting = UserPrompt.release(Contact().get_names(), Meeting().get_names())
-        iperson = Contact().get_entry(person['name'])
+        iperson = Contact().get_position(person['name'])
         # Meetings are numbered starting from 1. List indices start from zero. Make sure to change the right meeting:
-        imeeting = [Meeting().get_entry(name) - 1 for name in meeting['name']]
+        imeeting = [Meeting().get_position(name) - 1 for name in meeting['name']]
         participation = ContactDatabase.search((ContactQuery['position'] == iperson))[0]['participation']
         for m, i in enumerate(imeeting):
             if participation[i]:

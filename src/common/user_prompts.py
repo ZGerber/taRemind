@@ -13,11 +13,11 @@ Used to collect and/or confirm information from the user.
 
 def add_contact():
     questions = [ask_text("first_name",
-                          message="Enter the FIRST name of the new contact")[0],
+                          message="Enter the FIRST name of the new contact"),
                  ask_text("last_name",
-                          message="Enter the LAST name of the new contact")[0],
+                          message="Enter the LAST name of the new contact"),
                  ask_text("email_address",
-                          message="Enter the EMAIL ADDRESS of the new contact")[0]]
+                          message="Enter the EMAIL ADDRESS of the new contact")]
     answers = inquirer.prompt(questions)
     return answers['first_name'], answers['last_name'], answers['email_address']
 
@@ -35,20 +35,20 @@ def edit_contact(names: List[str], attributes: List[str]):
 
 def add_meeting():
     questions = [ask_text("meeting_name",
-                          message="Enter the NAME of the new meeting")[0],
+                          message="Enter the NAME of the new meeting"),
                  ask_checkbox("meeting_day",
                               message="On which day(s) of the week will the meeting occur? "
                                       "(Use SPACE to select/deselect and ENTER to proceed)",
                               choices=get_weekdays())[0],
                  ask_text("meeting_time",
-                          message="Enter the TIME at which the meeting will be held [HH:MM (24-hour clock)]")[0],
+                          message="Enter the TIME at which the meeting will be held [HH:MM (24-hour clock)]"),
                  ask_text("zoom_link",
                           message="Enter the ZOOM LINK at which the meeting will be held "
-                                  "(This should be a recurring meeting)")[0],
+                                  "(This should be a recurring meeting)"),
                  ask_text("zoom_id",
-                          message="Enter the ZOOM ID for the meeting")[0],
+                          message="Enter the ZOOM ID for the meeting"),
                  ask_text("passcode",
-                          message="Enter the ZOOM PASSCODE for the meeting")[0]]
+                          message="Enter the ZOOM PASSCODE for the meeting")]
     answers = inquirer.prompt(questions)
     return answers["meeting_name"], answers["meeting_day"], answers["meeting_time"], \
         answers["zoom_link"], answers["zoom_id"], answers["passcode"]
@@ -102,9 +102,13 @@ def choose_participation_view():
     return inquirer.prompt(which)
 
 
+def create_reminder(meetings: List[str]):
+    which = ask_list('name', "Which meeting would you like to set up a reminder for?", meetings)
+    return inquirer.prompt(which)
+
+
 def confirm(action: str, *args):
-    """
-    Ask the user to confirm their input. The input parameter 'action' determines which request is sent.
+    """ Ask the user to confirm their input. The input parameter 'action' determines which request is sent.
     """
     if action == "add_contact":
         confirm_add = ask_confirmation(action, f"Does this look correct?\n"
@@ -131,7 +135,7 @@ def confirm(action: str, *args):
 def ask_text(key: str, message: str) -> object:
     """ Ask the user to input some text.
     """
-    return [inquirer.Text(key, message=message)]
+    return inquirer.Text(key, message=message)
 
 
 def ask_list(key: str, message: str, choices: List[str]):

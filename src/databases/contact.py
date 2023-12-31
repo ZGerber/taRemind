@@ -1,4 +1,5 @@
 #!/usr/bin python3
+
 import typer
 import common.user_prompts as UserPrompt
 from typing import List
@@ -56,7 +57,7 @@ class Contact(Database):
         if not person:
             self.display()
         else:
-            pos = self.get_entry(person['name'])
+            pos = self.get_position(person['name'])
             UserPrompt.confirm("delete_contact", pos)
             ContactDatabase.remove(ContactQuery.position == pos)
             self.reset_positions(pos)
@@ -66,7 +67,7 @@ class Contact(Database):
         if not person:
             self.display()
         else:
-            pos = self.get_entry(person['name'])
+            pos = self.get_position(person['name'])
             if attribute["attribute"] == "First Name":
                 ContactDatabase.update({'first_name': p.ask("Enter the new First Name for this contact")},
                                        ContactQuery.position == pos)
@@ -77,6 +78,30 @@ class Contact(Database):
                 ContactDatabase.update({'email_address': p.ask("Enter the new Email Address for this contact")},
                                        ContactQuery.position == pos)
             print(f"[green]SUCCESS![/green]")
+
+    @staticmethod
+    def get_position(entry) -> int:
+        """ Gets a single entry from the contact database. Returns the position number of that entry.
+        Can accept either FIRST and LAST name, or POSITION.
+        """
+        if entry.isdigit():
+            position = entry
+        else:
+            first_name = entry.split()[0]
+            last_name = entry.split()[1]
+            position = ContactDatabase.get((ContactQuery.first_name == first_name
+                                            and ContactQuery.last_name == last_name))['position']
+        if not position:
+            print("[red]ERROR: Invalid entry.[/red]")
+            raise typer.Exit()
+        return int(position)
+
+    @staticmethod
+    def change_position(old_position: int, new_position: int) -> None:
+        """ Changes position of contact in the database.
+        """
+        ContactDatabase.update({'position': new_position},
+                               ContactQuery.position == old_position)
 
     def reset_positions(self, pos):
         """ After deleting a contact, the positions need to be reset to keep them contiguous.
@@ -102,30 +127,6 @@ class Contact(Database):
             table.add_row(f"[cyan]{contact['position']}[/cyan]",
                           f"[bold]{contact['first_name']} {contact['last_name']}[/bold]",
                           f"{contact['email_address']}")
-
-    @staticmethod
-    def get_entry(entry) -> int:
-        """ Gets a single entry from the contact database. Returns the position number of that entry.
-        Can accept either FIRST and LAST name, or POSITION.
-        """
-        if entry.isdigit():
-            position = entry
-        else:
-            first_name = entry.split()[0]
-            last_name = entry.split()[1]
-            position = ContactDatabase.get((ContactQuery.first_name == first_name
-                                            and ContactQuery.last_name == last_name))['position']
-        if not position:
-            print("[red]ERROR: Invalid entry.[/red]")
-            raise typer.Exit()
-        return int(position)
-
-    @staticmethod
-    def change_position(old_position: int, new_position: int) -> None:
-        """ Changes position of contact in the database.
-        """
-        ContactDatabase.update({'position': new_position},
-                               ContactQuery.position == old_position)
 
     def get_names(self):
         """ Return a list of all contact names
