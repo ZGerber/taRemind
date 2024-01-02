@@ -3,6 +3,7 @@
 # User-specific databases
 src/databases/contact-book.json
 src/databases/meeting-book.json
+src/databases/reminder-book.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
