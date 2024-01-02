@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union
 
 import inquirer
 from rich import print
@@ -90,7 +90,7 @@ def release(names: List[str], meetings: List[str]):
 
 
 def show_participants_by_meeting(meetings: List[str]):
-    which = ask_checkbox('name', f"For which meeting(s) would you like view participants? "
+    which = ask_checkbox('name', f"For which meeting(s) would you like view taParticipants? "
                                  f"(Use SPACE to select and ENTER to proceed)", meetings)
     return inquirer.prompt(which)
 
@@ -106,17 +106,21 @@ def choose_participation_view():
     return inquirer.prompt(which)
 
 
-def create_reminder(meetings: List[str]):
-    meeting = inquirer.prompt(ask_list('name', "Which meeting would you like to set up a reminder for?", meetings))
-    meeting_time = MeetingDatabase.get(MeetingQuery.meeting_name == meeting['name'])['meeting_time']
-    meeting_day = MeetingDatabase.get(MeetingQuery.meeting_name == meeting['name'])['meeting_day']
-    questions = [ask_list('day', f"The {meeting['name']} occurs on {meeting_day} at {meeting_time}. "
+def create_reminder(meetings: Union[str, List[str]]):
+    if isinstance(meetings, str):
+        meeting_name = meetings
+    else:
+        meeting = inquirer.prompt(ask_list('name', "Which meeting would you like to set up a reminder for?", meetings))
+        meeting_name = meeting['name']
+    meeting_time = MeetingDatabase.get(MeetingQuery.meeting_name == meeting_name)['meeting_time']
+    meeting_day = MeetingDatabase.get(MeetingQuery.meeting_name == meeting_name)['meeting_day']
+    questions = [ask_list('day', f"The {meeting_name} occurs on {meeting_day} at {meeting_time}. "
                                  f"On what day would you like the reminder to be sent?",
                           get_weekdays())[0],
                  ask_text('time', f"Enter the time when the reminder email should be sent "
                                   f"[HH:MM (24-hour clock)]")]
-    answers = inquirer.prompt(questions)
-    return meeting, meeting_day, meeting_time, answers['day'], answers['time']
+    reminder = inquirer.prompt(questions)
+    return meeting_name, meeting_day, meeting_time, reminder['day'], reminder['time']
 
 
 def confirm(action: str, *args):
@@ -142,6 +146,10 @@ def confirm(action: str, *args):
                 f"[green]Success![/green] Removed {first_name} {last_name} from the contact database.")
         else:
             print(f"{first_name} {last_name} [red]has not been removed from the contact database.[/red]")
+
+    elif action == "create_reminder":
+        confirm_reminder = ask_confirmation(action, f"Would you like to set up a reminder for this meeting?")
+        return inquirer.prompt(confirm_reminder)
 
 
 def ask_text(key: str, message: str) -> object:

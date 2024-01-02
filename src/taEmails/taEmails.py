@@ -5,11 +5,9 @@ from datetime import datetime, timedelta
 from email.message import EmailMessage
 from typing import List
 
-import reminders
-from common import user_prompts as UserPrompt
+import taEmails
 from databases import MeetingDatabase, MeetingQuery
-from databases.meeting_class import Meeting
-from participants.participant_class import Participant
+from taParticipants.taParticipants_class import Participant
 
 
 def get_meeting_name(position: int) -> str:
@@ -49,7 +47,7 @@ def get_zoom_passcode(position: int) -> str:
 
 
 def get_day_of_week(meeting_day: str):
-    """ Some email reminders don't get sent on the day of the meeting. This function checks to see if meeting_day
+    """ Some email taEmails don't get sent on the day of the meeting. This function checks to see if meeting_day
     matches the current day of the week. If so, the email will say "today". If not, it will say either "tomorrow" or the
     scheduled day (if the meeting is more than 1 day away).
     """
@@ -92,7 +90,7 @@ def email_body(position: int) -> str:
 
 def create_email(position: int):
     email = EmailMessage()
-    email['From'] = reminders.EmailInfo.SENDER
+    email['From'] = taEmails.EmailInfo.SENDER
     email['To'] = recipients(position)
     email['Subject'] = email_subject(position)
     email.set_content(email_body(position))
@@ -101,13 +99,8 @@ def create_email(position: int):
 
 def send_email(position: int):
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as smtp:
-        smtp.login(reminders.EmailInfo.SENDER, reminders.EmailInfo.PASSWORD)
-        smtp.sendmail(reminders.EmailInfo.SENDER, recipients(position), create_email(position))
+        smtp.login(taEmails.EmailInfo.SENDER, taEmails.EmailInfo.PASSWORD)
+        # smtp.sendmail(taEmails.EmailInfo.SENDER, recipients(position), create_email(position))
     print(f"{get_meeting_name(position)} email sent: {datetime.now().year}/{datetime.now().month}/{datetime.now().day} "
           f"at {datetime.now().hour}:{datetime.now().minute}:{datetime.now().second}")
 
-
-def remind():
-    meeting, meeting_day, meeting_time, reminder_day, reminder_time = UserPrompt.create_reminder(Meeting().get_names())
-    meeting_position = Meeting().get_position(meeting['name'])
-    reminders.r

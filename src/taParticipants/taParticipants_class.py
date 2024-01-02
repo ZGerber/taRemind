@@ -2,28 +2,28 @@
 
 from rich import print
 
-import common.user_prompts as UserPrompt
+from common import ta_prompts as UserPrompt
 from databases import ContactQuery, MeetingQuery, ContactDatabase, MeetingDatabase
-from databases.contact_class import Contact
-from databases.meeting_class import Meeting
+import databases.taContacts_class as taContacts
+import databases.taMeetings_class as taMeetings
 
 
 class Participant:
 
     def display(self):
-        """ Show all participants for a given meeting, or vice-versa.
+        """ Show all taParticipants for a given meeting, or vice-versa.
         """
         task = UserPrompt.choose_participation_view()
         if task['name'] == "View all participants in a meeting":
-            meeting = UserPrompt.show_participants_by_meeting(Meeting().get_names())
-            imeeting = [Meeting().get_position(name) - 1 for name in meeting['name']]
+            meeting = UserPrompt.show_participants_by_meeting(taMeetings.Meeting().query('meeting_name'))
+            imeeting = [taMeetings.get_meeting_position(name) - 1 for name in meeting['name']]
             for m, i in enumerate(imeeting):
                 print(f"[magenta]The following contacts are participants in the[/magenta] {meeting['name'][m]}:")
                 participant_names, _ = self.get_participants(i + 1)
                 for name in participant_names:
                     print("\t" + name[0] + " " + name[1])
         elif task['name'] == "View all meetings for a participant":
-            person = UserPrompt.show_meeting_by_participant(Contact().get_names())
+            person = UserPrompt.show_meeting_by_participant(taContacts.Contact().query('name'))
             participation = ContactDatabase.get((ContactQuery.first_name == person['name'].split()[0]) &
                                                 (ContactQuery.last_name == person['name'].split()[1]))['participation']
             print(f"{person['name']} [magenta]participates in the following meetings:[/magenta]")
@@ -37,7 +37,7 @@ class Participant:
         """ Add a new entry to the "participation" list for EACH contact, rather than updating a particular contact.
         This happens when a new meeting is created. The value of the appended entry is False by default.
         """
-        for result in Contact().query():
+        for result in taContacts.Contact().query():
             participation_list = result['participation']
             participation_list.append(False)
             ContactDatabase.update({'participation': participation_list}, ContactQuery.position == result['position'])
@@ -48,7 +48,7 @@ class Participant:
         """ When a meeting is deleted, the corresponding entry in the participation list must be deleted for each
         contact.
         """
-        for result in Contact().query():
+        for result in taContacts.Contact().query():
             participation_list = result['participation']
             participation_list.pop(pos - 1)
             ContactDatabase.update({'participation': participation_list}, ContactQuery.position == result['position'])
@@ -57,10 +57,11 @@ class Participant:
     def assign() -> None:
         """ Assigns a contact as a meeting participant.
         """
-        person, meeting = UserPrompt.assign(Contact().get_names(), Meeting().get_names())
-        iperson = Contact().get_position(person['name'])
+        person, meeting = UserPrompt.assign(taContacts.Contact().query('name'),
+                                            taMeetings.Meeting().query('meeting_name'))
+        iperson = taContacts.get_contact_position(person['name'])
         # Meetings are numbered starting from 1. List indices start from zero. Making sure to change the right meeting:
-        imeeting = [Meeting().get_position(name) - 1 for name in meeting['name']]
+        imeeting = [taMeetings.get_meeting_position(name) - 1 for name in meeting['name']]
         participation = ContactDatabase.search((ContactQuery['position'] == iperson))[0]['participation']
         for m, i in enumerate(imeeting):
             if participation[i]:
@@ -70,7 +71,7 @@ class Participant:
                 participation[i] = not participation[i]
                 print(f"[green]SUCCESS![/green] {person['name']} "
                       f"[green]has been assigned to:[/green] {meeting['name'][m]}")
-            ContactDatabase.update({'participation': participation}, ContactQuery.position == iperson)
+                ContactDatabase.update({'participation': participation}, ContactQuery.position == iperson)
 
     @staticmethod
     def release() -> None:
@@ -78,10 +79,11 @@ class Participant:
         then the value at the index corresponding to 'meeting_position' is checked. If True, change it.
         Otherwise, print an "OK" message. The program doesn't care if the user tries to remove what isn't there.
         """
-        person, meeting = UserPrompt.release(Contact().get_names(), Meeting().get_names())
-        iperson = Contact().get_position(person['name'])
+        person, meeting = UserPrompt.release(taContacts.Contact().query('name'), 
+                                             taMeetings.Meeting().query('meeting_name'))
+        iperson = taContacts.Contact().query(person['name'])
         # Meetings are numbered starting from 1. List indices start from zero. Make sure to change the right meeting:
-        imeeting = [Meeting().get_position(name) - 1 for name in meeting['name']]
+        imeeting = [taMeetings.get_meeting_position(name) - 1 for name in meeting['name']]
         participation = ContactDatabase.search((ContactQuery['position'] == iperson))[0]['participation']
         for m, i in enumerate(imeeting):
             if participation[i]:
@@ -95,12 +97,12 @@ class Participant:
 
     @staticmethod
     def get_participants(meeting_position: int):
-        """ Return the names and email addresses of meeting participants.
+        """ Return the names and email addresses of meeting taParticipants.
         """
         ind = meeting_position - 1
         participant_names = []
         participant_emails = []
-        results = Contact().query()
+        results = taContacts.Contact().query()
         for result in results:
             participation_list = result['participation']
             if participation_list[ind]:

@@ -15,6 +15,9 @@ MEETING_DB_NAME = 'meeting-book.json'
 MEETING_DB_FILE = Path(DATABASE_DIR, MEETING_DB_NAME)
 CONTACT_DB_NAME = 'contact-book.json'
 CONTACT_DB_FILE = Path(DATABASE_DIR, CONTACT_DB_NAME)
+REMINDER_DB_NAME = 'reminder-book.json'
+REMINDER_DB_FILE = Path(DATABASE_DIR, REMINDER_DB_NAME)
+
 
 # Initialize the MEETING database
 MeetingDatabase = TinyDB(MEETING_DB_FILE)
@@ -25,5 +28,10 @@ MeetingQuery = Query()  # This object is used to interact with the database
 ContactDatabase = TinyDB(CONTACT_DB_FILE)
 ContactDatabase.default_table_name = 'contact-book'
 ContactQuery = Query()  # This object is used to interact with the database
+
+# Initialize the REMINDER database
+ReminderDatabase = TinyDB(REMINDER_DB_FILE)
+ReminderDatabase.default_table_name = 'reminder-book'
+ReminderQuery = Query()  # This object is used to interact with the database
 
 console = Console()  # Class for terminal formatting
