@@ -8,9 +8,9 @@ from rich import print
 from rich.prompt import Prompt as p
 from rich.table import Table
 
-import common.ta_prompts as UserPrompt
+import common.taprompts as UserPrompt
 from databases import ContactQuery, ContactDatabase, MeetingDatabase, console
-from databases.taDatabases_class import Database
+from databases.tadatabases_class import Database
 
 
 @dataclass
@@ -51,11 +51,11 @@ class Contact(Database):
             'last_name': last_name,
             'email_address': email_address,
             'position': position,
-            'participation': [False] * meeting_count  # New contacts aren't taParticipants in any meetings by default
+            'participation': [False] * meeting_count  # New contacts aren't participants in any meetings by default
         }
-        UserPrompt.confirm("add_contact", first_name, last_name, email_address)
-        ContactDatabase.insert(new_contact)
-        return
+        confirm_add = UserPrompt.confirm("add_contact", first_name, last_name, email_address)
+        if confirm_add:
+            ContactDatabase.insert(new_contact)
 
     def delete(self):
         """ Remove a contact from the database
@@ -65,9 +65,10 @@ class Contact(Database):
             self.display()
         else:
             pos = get_contact_position(person['name'])
-            UserPrompt.confirm("delete_contact", pos)
-            ContactDatabase.remove(ContactQuery.position == pos)
-            reset_positions(pos)
+            confirm_delete = UserPrompt.confirm("delete_contact", pos)
+            if confirm_delete:
+                ContactDatabase.remove(ContactQuery.position == pos)
+                reset_positions(pos)
 
     def edit(self):
         person, attribute = UserPrompt.edit_contact(self.query("name"), self.contact_attributes)
@@ -113,7 +114,7 @@ def change_position(old_position: int, new_position: int) -> None:
 
 def reset_positions(pos):
     """ After deleting a contact, the positions need to be reset to keep them contiguous. """
-    for i in range(pos + 1, len(Contact.query()) + 2):
+    for i in range(pos + 1, len(Contact().query()) + 2):
         change_position(i, i - 1)
 
 

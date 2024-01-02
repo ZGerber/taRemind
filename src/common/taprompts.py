@@ -49,13 +49,6 @@ def add_meeting():
                  ask_text("passcode",
                           message="Enter the ZOOM PASSCODE for the meeting (default=None)")]
     answers = inquirer.prompt(questions)
-    # try:
-    #     meeting_time = datetime.datetime.strptime(answers["meeting_time"], "%H%M")
-    #     print(meeting_time.strftime("%H%M"))
-    # except:
-    #     print("Please enter correct time in HHMM format")
-    #     sys.exit()
-
     return answers["meeting_name"], answers["meeting_day"], answers["meeting_time"], \
         answers["zoom_link"], answers["zoom_id"], answers["passcode"]
 
@@ -113,6 +106,7 @@ def create_reminder(meetings: Union[str, List[str]]):
         meeting = inquirer.prompt(ask_list('name', "Which meeting would you like to set up a reminder for?", meetings))
         meeting_name = meeting['name']
     meeting_time = MeetingDatabase.get(MeetingQuery.meeting_name == meeting_name)['meeting_time']
+
     meeting_day = MeetingDatabase.get(MeetingQuery.meeting_name == meeting_name)['meeting_day']
     questions = [ask_list('day', f"The {meeting_name} occurs on {meeting_day} at {meeting_time}. "
                                  f"On what day would you like the reminder to be sent?",
@@ -127,29 +121,30 @@ def confirm(action: str, *args):
     """ Ask the user to confirm their input. The input parameter 'action' determines which request is sent.
     """
     if action == "add_contact":
-        confirm_add = ask_confirmation(action, f"Does this look correct?\n"
-                                               f"First Name: {args[0]}\n"
-                                               f"Last Name: {args[1]}\n"
-                                               f"Email Address: {args[2]}\n")
-        if inquirer.prompt(confirm_add)[f'{action}']:
+        confirm_add = inquirer.confirm(f"Does this look correct?\n"
+                                       f"First Name: {args[0]}\n"
+                                       f"Last Name: {args[1]}\n"
+                                       f"Email Address: {args[2]}\n")
+        if confirm_add:
             print(f"[green]SUCCESS![/green] Added {args[0]} {args[1]} to the contact database!")
         else:
             print(f"{args[0]} {args[1]} [red]has not been added to the contact database[/red] ")
+        return confirm_add
 
     elif action == "delete_contact":
         first_name = ContactDatabase.get(ContactQuery.position == args[0])['first_name']
         last_name = ContactDatabase.get(ContactQuery.position == args[0])['last_name']
-        confirm_delete = ask_confirmation(action, f"Are you sure you want to remove {first_name} {last_name} "
-                                                  f"from the contact database?")
-        if inquirer.prompt(confirm_delete)[f'{action}']:
+        confirm_delete = inquirer.confirm(f"Are you sure you want to remove {first_name} {last_name} "
+                                          f"from the contact database?")
+        if confirm_delete:
             print(
                 f"[green]Success![/green] Removed {first_name} {last_name} from the contact database.")
         else:
             print(f"{first_name} {last_name} [red]has not been removed from the contact database.[/red]")
+        return confirm_delete
 
     elif action == "create_reminder":
-        confirm_reminder = ask_confirmation(action, f"Would you like to set up a reminder for this meeting?")
-        return inquirer.prompt(confirm_reminder)
+        return inquirer.confirm("Would you like to set up a reminder for this meeting?")
 
 
 def ask_text(key: str, message: str) -> object:
@@ -169,8 +164,3 @@ def ask_checkbox(key: str, message: str, choices: List[str]):
     """
     return [inquirer.Checkbox(key, message=message, choices=choices)]
 
-
-def ask_confirmation(key: str, message: str):
-    """ Ask the user to confirm their choice with a YES/NO question.
-    """
-    return [inquirer.Confirm(key, message=message)]

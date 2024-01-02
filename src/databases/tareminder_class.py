@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 
-import common.ta_prompts as UserPrompt
-import databases.taDatabases_class as taDatabases
-import databases.taMeetings_class as taMeetings
+from common import check_dt
+import common.taprompts as UserPrompt
+import databases.tadatabases_class as taDatabases
+import databases.tameetings_class as taMeetings
 from databases import ReminderDatabase, ReminderQuery
 
 
 class Remind(taDatabases.Database):
-    def query(self):
-        return ReminderDatabase.all()
+
+    def query(self, attribute="all"):
+        if attribute == "all":
+            return ReminderDatabase.all()
+        else:
+            return [result[attribute] for result in ReminderDatabase.all()]
 
     def display(self):
         """ Temporary: Just print each entry (dictionary) in the database. """
@@ -24,6 +29,7 @@ class Remind(taDatabases.Database):
             arg = taMeetings.Meeting().query("meeting_name")
         meeting_name, meeting_day, meeting_time, reminder_day, reminder_time = \
             UserPrompt.create_reminder(arg)
+        check_dt(meeting_time)
         meeting_position = taMeetings.get_meeting_position(meeting_name)
         reminder = {
             "meeting_name": meeting_name,

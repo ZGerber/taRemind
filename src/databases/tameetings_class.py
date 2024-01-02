@@ -6,12 +6,12 @@ from rich import print
 from rich.prompt import Prompt as p
 from rich.table import Table
 
-from common import get_weekdays
+from common import get_weekdays, check_dt
 from databases import MeetingQuery, MeetingDatabase, ReminderDatabase, ReminderQuery, console
-import databases.taDatabases_class as taDatabase
-import databases.taReminder_class as taReminders
-import taParticipants.taParticipants_class as taParticipants
-import common.ta_prompts as UserPrompt
+import databases.tadatabases_class as taDatabase
+import databases.tareminder_class as taReminders
+import participants.taparticipants as taParticipants
+import common.taprompts as UserPrompt
 
 
 @dataclass
@@ -46,6 +46,7 @@ class Meeting(taDatabase.Database):
         """
 
         meeting_name, meeting_day, meeting_time, zoom_link, zoom_id, passcode = UserPrompt.add_meeting()
+        check_dt(meeting_time)
         position = len(MeetingDatabase) + 1
         new_meeting = {
             'meeting_name': meeting_name,
@@ -56,8 +57,7 @@ class Meeting(taDatabase.Database):
             'passcode': passcode,
             'position': position
         }
-        # Participant().append_participation_list()
-        taParticipants.Participant.append_participation_list()
+        taParticipants.append_participation_list()
         MeetingDatabase.insert(new_meeting)
         reminder = UserPrompt.confirm("create_reminder")
         if reminder:
@@ -75,7 +75,7 @@ class Meeting(taDatabase.Database):
             MeetingDatabase.remove(MeetingQuery.position == pos)
             ReminderDatabase.remove(ReminderQuery.meeting_position == pos)  # Remove corresponding reminder
             reset_positions(pos)
-            taParticipants.Participant().remove_entry(pos)
+            taParticipants.remove_entry(pos)
             print(f"[magenta]Removed meeting:[/magenta] {meeting['name']}")
 
     def edit(self):

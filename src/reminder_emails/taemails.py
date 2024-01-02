@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 from email.message import EmailMessage
 from typing import List
 
-import taEmails
+import reminder_emails
 from databases import MeetingDatabase, MeetingQuery
-from taParticipants.taParticipants_class import Participant
+from participants.taparticipants import get_participants
 
 
 def get_meeting_name(position: int) -> str:
@@ -47,7 +47,7 @@ def get_zoom_passcode(position: int) -> str:
 
 
 def get_day_of_week(meeting_day: str):
-    """ Some email taEmails don't get sent on the day of the meeting. This function checks to see if meeting_day
+    """ Some email reminder_emails don't get sent on the day of the meeting. This function checks to see if meeting_day
     matches the current day of the week. If so, the email will say "today". If not, it will say either "tomorrow" or the
     scheduled day (if the meeting is more than 1 day away).
     """
@@ -63,7 +63,7 @@ def get_day_of_week(meeting_day: str):
 def recipients(position: int) -> List[str]:
     """ Accepts the position number of a meeting and returns a list of the recipients' email addresses.
     """
-    _, email_addresses = Participant().get_participants(position)
+    _, email_addresses = get_participants(position)
     return email_addresses
 
 
@@ -79,7 +79,7 @@ def email_body(position: int) -> str:
     return f"""
     Hi everyone,
             
-    This is a reminder that the {get_meeting_name(position)} is {get_day_of_week(get_meeting_day(position))} at {get_meeting_time(position)} MDT over Zoom.
+    This is a reminder that the {get_meeting_name(position)} is {get_day_of_week(get_meeting_day(position))} at {get_meeting_time(position)} MST over Zoom.
 
     {get_zoom_link(position)} 
 
@@ -90,7 +90,7 @@ def email_body(position: int) -> str:
 
 def create_email(position: int):
     email = EmailMessage()
-    email['From'] = taEmails.EmailInfo.SENDER
+    email['From'] = reminder_emails.SENDER
     email['To'] = recipients(position)
     email['Subject'] = email_subject(position)
     email.set_content(email_body(position))
@@ -99,8 +99,8 @@ def create_email(position: int):
 
 def send_email(position: int):
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as smtp:
-        smtp.login(taEmails.EmailInfo.SENDER, taEmails.EmailInfo.PASSWORD)
-        # smtp.sendmail(taEmails.EmailInfo.SENDER, recipients(position), create_email(position))
+        smtp.login(reminder_emails.SENDER, reminder_emails.PASSWORD)
+        smtp.sendmail(reminder_emails.SENDER, recipients(position), create_email(position))
     print(f"{get_meeting_name(position)} email sent: {datetime.now().year}/{datetime.now().month}/{datetime.now().day} "
           f"at {datetime.now().hour}:{datetime.now().minute}:{datetime.now().second}")
 
