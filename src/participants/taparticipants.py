@@ -2,10 +2,10 @@
 
 from rich import print
 
-from common import taprompts as UserPrompt
-from databases import ContactQuery, MeetingQuery, ContactDatabase, MeetingDatabase
 import databases.tacontacts_class as taContacts
 import databases.tameetings_class as taMeetings
+from common import taprompts as UserPrompt
+from databases import ContactQuery, MeetingQuery, ContactDatabase, MeetingDatabase
 
 
 def append_participation_list():

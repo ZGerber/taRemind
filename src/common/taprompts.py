@@ -9,6 +9,8 @@ from databases import ContactQuery, ContactDatabase, MeetingQuery, MeetingDataba
 
 """ 
 A collection of prompts from the Inquirer library. Used to collect information from the user.
+
+TO DO: This module is disorganized. This can surely be done with less code.
 """
 
 
@@ -106,7 +108,6 @@ def create_reminder(meetings: Union[str, List[str]]):
         meeting = inquirer.prompt(ask_list('name', "Which meeting would you like to set up a reminder for?", meetings))
         meeting_name = meeting['name']
     meeting_time = MeetingDatabase.get(MeetingQuery.meeting_name == meeting_name)['meeting_time']
-
     meeting_day = MeetingDatabase.get(MeetingQuery.meeting_name == meeting_name)['meeting_day']
     questions = [ask_list('day', f"The {meeting_name} occurs on {meeting_day} at {meeting_time}. "
                                  f"On what day would you like the reminder to be sent?",

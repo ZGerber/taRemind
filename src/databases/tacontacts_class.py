@@ -1,9 +1,9 @@
 #!/usr/bin python3
 
+import sys
 from dataclasses import dataclass, field
 from typing import List
 
-import sys
 from rich import print
 from rich.prompt import Prompt as p
 from rich.table import Table
@@ -20,8 +20,7 @@ class Contact(Database):
                                                               "Email Address"])
 
     def query(self, attribute="all"):
-        """ Query the entire database
-        """
+        """ Query the entire database """
         if attribute == "all":
             return ContactDatabase.all()
         elif attribute == "name":
@@ -30,8 +29,7 @@ class Contact(Database):
             return [result[attribute] for result in ContactDatabase.all()]
 
     def display(self):
-        """  Display a table of all contacts.
-        """
+        """  Display a table of all contacts. """
         results = self.query()
         if not results:
             print("[red]No contacts found![/red]")
@@ -41,8 +39,7 @@ class Contact(Database):
         console.print(table)
 
     def add(self):
-        """ Add contact to the database
-        """
+        """ Add contact to the database """
         first_name, last_name, email_address = UserPrompt.add_contact()
         meeting_count = len(MeetingDatabase)
         position = len(ContactDatabase) + 1

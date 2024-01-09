@@ -6,12 +6,12 @@ from rich import print
 from rich.prompt import Prompt as p
 from rich.table import Table
 
-from common import get_weekdays, check_dt
-from databases import MeetingQuery, MeetingDatabase, ReminderDatabase, ReminderQuery, console
+import common.taprompts as UserPrompt
 import databases.tadatabases_class as taDatabase
 import databases.tareminder_class as taReminders
 import participants.taparticipants as taParticipants
-import common.taprompts as UserPrompt
+from common import get_weekdays, check_dt
+from databases import MeetingQuery, MeetingDatabase, ReminderDatabase, ReminderQuery, console
 
 
 @dataclass
@@ -24,16 +24,14 @@ class Meeting(taDatabase.Database):
                                                               "Passcode"])
 
     def query(self, attribute="all"):
-        """ Query the entire database.
-        """
+        """ Query the entire database. """
         if attribute == "all":
             return MeetingDatabase.all()
         else:
             return [result[attribute] for result in MeetingDatabase.all()]
 
     def display(self):
-        """ Display a table of all meetings.
-        """
+        """ Display a table of all meetings. """
         results = self.query()
         if not results:
             print("[red]No meetings found![/red]")
@@ -42,9 +40,7 @@ class Meeting(taDatabase.Database):
         console.print(table)
 
     def add(self):
-        """ Add a new meeting to the database
-        """
-
+        """ Add a new meeting to the database """
         meeting_name, meeting_day, meeting_time, zoom_link, zoom_id, passcode = UserPrompt.add_meeting()
         check_dt(meeting_time)
         position = len(MeetingDatabase) + 1
@@ -79,8 +75,7 @@ class Meeting(taDatabase.Database):
             print(f"[magenta]Removed meeting:[/magenta] {meeting['name']}")
 
     def edit(self):
-        """ Edit a meeting.
-        """
+        """ Edit a meeting. """
         meeting, attribute = UserPrompt.edit_meeting(self.query("meeting_name"), self.meeting_attributes)
         if not meeting:
             self.display()
@@ -108,8 +103,7 @@ class Meeting(taDatabase.Database):
 
 
 def change_position(old_position: int, new_position: int) -> None:
-    """ Changes position of meeting in the database.
-    """
+    """ Changes position of meeting in the database. """
     MeetingDatabase.update({'position': new_position},
                            MeetingQuery.position == old_position)
 

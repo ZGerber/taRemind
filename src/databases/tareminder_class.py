@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 
-from common import check_dt
 import common.taprompts as UserPrompt
 import databases.tadatabases_class as taDatabases
 import databases.tameetings_class as taMeetings
-from databases import ReminderDatabase, ReminderQuery
+from common import check_dt
+from databases import ReminderDatabase
+from dataclasses import dataclass, field
+from typing import List
 
 
+@dataclass
 class Remind(taDatabases.Database):
+    reminder_attributes: List = field(default_factory=lambda: ["Meeting Name",
+                                                               "Meeting Day",
+                                                               "Meeting Time",
+                                                               "Meeting Number",
+                                                               "Reminder Day",
+                                                               "Reminder Time"])
 
     def query(self, attribute="all"):
         if attribute == "all":
@@ -16,9 +25,12 @@ class Remind(taDatabases.Database):
             return [result[attribute] for result in ReminderDatabase.all()]
 
     def display(self):
-        """ Temporary: Just print each entry (dictionary) in the database. """
+        """ Display all reminders in the database """
+        col_width = max(len(str(word)) for result in self.query() for word in result.values()) + 2
+        print("".join(word.ljust(col_width) for word in self.reminder_attributes))
+        print("-"*col_width*len(self.reminder_attributes))
         for result in self.query():
-            print(result)
+            print("".join(str(word).ljust(col_width) for word in result.values()))
         return
 
     def add(self, new_meeting=False, name=None):
@@ -46,4 +58,5 @@ class Remind(taDatabases.Database):
         return
 
     def edit(self):
+
         return

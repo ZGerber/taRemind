@@ -22,16 +22,17 @@ REMINDER_DB_FILE = Path(DATABASE_DIR, REMINDER_DB_NAME)
 # Initialize the MEETING database
 MeetingDatabase = TinyDB(MEETING_DB_FILE)
 MeetingDatabase.default_table_name = 'meeting-book'
-MeetingQuery = Query()  # This object is used to interact with the database
+MeetingQuery = Query()
 
 # Initialize the CONTACT database
 ContactDatabase = TinyDB(CONTACT_DB_FILE)
 ContactDatabase.default_table_name = 'contact-book'
-ContactQuery = Query()  # This object is used to interact with the database
+ContactQuery = Query()
 
 # Initialize the REMINDER database
 ReminderDatabase = TinyDB(REMINDER_DB_FILE)
 ReminderDatabase.default_table_name = 'reminder-book'
-ReminderQuery = Query()  # This object is used to interact with the database
+ReminderQuery = Query()
 
-console = Console()  # Class for terminal formatting
+# Class for formatting terminal output
+console = Console()

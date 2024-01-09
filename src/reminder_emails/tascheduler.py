@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 
-from common import abbreviate_weekday, get_hour, get_minute
 from apscheduler.schedulers.background import BlockingScheduler
+
 import databases.tareminder_class as taReminders
 import reminder_emails.taemails as taEmails
-from datetime import datetime
+from common import abbreviate_weekday, get_hour, get_minute
 
 
-def start_daemon():
+def run_scheduler():
     scheduler = BlockingScheduler()
     for reminder in taReminders.Remind().query():
-        # scheduler.add_job(taEmails.send_email,
-        #                   trigger='interval',
-        #                   seconds=3,
-        #                   args=[reminder['meeting_position']])
-
         scheduler.add_job(func=taEmails.send_email,
                           trigger='cron',
                           day_of_week=abbreviate_weekday(reminder['reminder_day']),

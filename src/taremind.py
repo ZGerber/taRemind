@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 import typer
 
-import databases.tareminder_class as taReminders
 import databases.tacontacts_class as taContacts
 import databases.tameetings_class as taMeetings
-import reminder_emails.tascheduler as taScheduler
+import databases.tareminder_class as taReminders
 import participants.taparticipants as taParticipants
+import reminder_emails.tascheduler as taScheduler
 
 app = typer.Typer(add_completion=False, no_args_is_help=True,
                   context_settings=dict(help_option_names=['-h', '--help']),
-                  help="This program is used to manage contacts and meetings, and to send automated email reminder_emails "
+                  help="This program is used to manage contacts and meetings, and to send automated email reminders "
                        "to meeting participants. Contacts are stored in a database called contact-book, which is "
                        "in the JSON format. Contacts can be added, removed, or edited, and the contact book can be "
                        "printed to the console. Similarly, meetings are stored in a database called meeting-book, "
@@ -18,35 +18,39 @@ app = typer.Typer(add_completion=False, no_args_is_help=True,
                        "If assigned, contacts become 'participants'. Participants will receive email reminders "
                        "regarding their upcoming meetings.")
 
+contact_options = ["contacts", "contact", "c", "people"]
+meeting_options = ["meetings", "meeting", "m", "meet"]
+participant_options = ["participants", "participant", "p"]
+reminder_options = ["reminders", "reminder", "remind", "r"]
+
 
 @app.command("show")
 def show(database: str) -> None:
     """ Display all contacts, meetings, participants, or reminders for a given meeting.
     """
-    if database == "contacts" or database == "contact" or database == "c":
+    if database in contact_options:
         taContacts.Contact().display()
 
-    elif database == "meetings" or database == "meeting" or database == "m":
+    elif database in meeting_options:
         taMeetings.Meeting().display()
 
-    elif database == "participants" or database == "participant" or database == "p":
+    elif database in participant_options:
         taParticipants.display()
 
-    elif database == "reminders" or database == "reminder" or database == "r":
+    elif database == reminder_options:
         taReminders.Remind().display()
 
 
 @app.command("add")
 def add(database: str) -> None:
-    """ Add a contact or meeting to the database.
-    """
-    if database == "contacts" or database == "contact":
+    """ Add a contact, meeting or reminder to the database. """
+    if database in contact_options:
         taContacts.Contact().add()
 
-    elif database == "meetings" or database == "meeting":
+    elif database in meeting_options:
         taMeetings.Meeting().add()
 
-    elif database == "reminders" or database == "reminder":
+    elif database in reminder_options:
         taReminders.Remind().add()
 
 
@@ -54,13 +58,13 @@ def add(database: str) -> None:
 def edit(database: str) -> None:
     """ Edit an existing contact or meeting.
     """
-    if database == "contacts" or database == "contact":
+    if database in contact_options:
         taContacts.Contact().edit()
 
-    elif database == "meetings" or database == "meeting":
+    elif database in meeting_options:
         taMeetings.Meeting().edit()
 
-    elif database == "reminders" or database == "reminder":
+    elif database in reminder_options:
         taReminders.Remind().edit()
 
 
@@ -68,13 +72,13 @@ def edit(database: str) -> None:
 def delete(database: str) -> None:
     """ Delete a contact or meeting from the database.
     """
-    if database == "contacts" or database == "contact":
+    if database in contact_options:
         taContacts.Contact().delete()
 
-    elif database == "meetings" or database == "meeting":
+    elif database in meeting_options:
         taMeetings.Meeting().delete()
 
-    elif database == "reminders" or database == "reminder":
+    elif database in reminder_options:
         taReminders.Remind().delete()
 
 
@@ -87,8 +91,7 @@ def assign() -> None:
 
 @app.command("release")
 def release() -> None:
-    """ Remove a participant from a meeting.
-    """
+    """ Remove a participant from a meeting. """
     taParticipants.release()
 
 
@@ -96,7 +99,7 @@ def release() -> None:
 def start() -> None:
     """ Start the email daemon in the background. This will cause all reminders in the database to be
     sent at their scheduled times. This should be started whenever the host computer is rebooted. """
-    taScheduler.start_daemon()
+    taScheduler.run_scheduler()
 
 
 if __name__ == "__main__":
