@@ -37,7 +37,7 @@ def show(database: str) -> None:
     elif database in participant_options:
         taParticipants.display()
 
-    elif database == reminder_options:
+    elif database in reminder_options:
         taReminders.Remind().display()
 
 
