@@ -47,6 +47,10 @@ Available databases are:
 * meetings
 * reminders
 
+There are additional commands for assigning (releasing) participants to (from) meetings. These commands do not require a 'database' argument.
+* assign
+* release
+
 #### Viewing a database
 To view the contents of a database, the use the "show" command. For example:
 ```bash
