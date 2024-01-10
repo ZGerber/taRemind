@@ -1,4 +1,4 @@
-# taRemind:
+# taRemind
 
 Provides a simple command line tool for managing contacts and meetings, and automates the sending of reminder emails.
 
@@ -34,7 +34,7 @@ TO DO
 ### Usage
 The user can interact with each database through the command line. The syntax is 
 ```bash
-taremind.py {action} {database}
+taremind.py {command} {database}
 ```
 Available commands are:
 * show
