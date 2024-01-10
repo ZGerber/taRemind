@@ -1,132 +1,118 @@
 # taRemind:
 
-Provides a simple CLI tool for managing contacts and meetings, and automates the sending of reminder emails.
+Provides a simple command line tool for managing contacts and meetings, and automates the sending of reminder emails.
 
-### Author:
+## Description
+This program is used to manage contacts and meetings, and to send automated email reminders to meeting participants. 
 
-Zane Gerber
+Contacts are stored in a database called contact-book, which is in the JSON format.  Contacts can be added, deleted, or edited, and the contact book can be printed to the console. 
 
-### Last Modified:
+Similarly, meetings are stored in a database called meeting-book, also in the JSON format. Meetings can be created, deleted, or edited, and the meeting book can be printed to the console. 
 
-May 10, 2023
+Contacts can be assigned to (or released from) meetings. If assigned, contacts become 'participants'. Participants will  receive email reminders regarding their upcoming meetings.
 
-### Status:
+Reminders are scheduled within the program. The scheduler runs as a background daemon using Supervisord. Emails can be sent from any address, but Gmail is used as a relay service. 
 
-Tested and working:
-
-* Contact management     (create, remove, update, read)
-
-* Meeting management     (create, remove, update, read)
-
-* Participant management (assign, release, read)
-
-To do:
-
-* Documentation. Add help strings, annotations, etc. Make it pretty.
-
-* Add functionality to send emails. This will be incorporated as a separate python module.
-The sending of emails depends on successful authentication of DNS records. CHPC has made the changes, and I am
-waiting for them to take effect.
-  
-## Requirements:
-
-Tested with python 3.8.10 on Ubuntu 20.0.4
-	
-* typer   
+## Getting Started
+                                                               
+### Dependencies
+Typer: for handling command line input   
 ```bash
 pip install "typer[all]"
 ```
-* tinydb   
+TinyDB: lightweight database tool
 ```bash
 pip install tinydb
 ```
-* rich 
+Rich: provides output formatting tools
 ```bash
 pip install rich
 ```
-* sendgrid 
+
+### Installation & Setup
+TO DO
+### Usage
+The user can interact with each database through the command line. The syntax is 
 ```bash
-pip install sendgrid
+taremind.py {action} {database}
 ```
+Available actions are:
+* show
+* add
+* delete
+* edit
 
-You will also need a Sendgrid API key. See Setup. (This is only necessary if sending emails).
+Available databases are:
+* contacts
+* meetings
+* reminders
 
-## Setup
-
-For sending emails from ta-remind@cosmic.utah.edu, the sendgrid API key has already been obtained (ask Zane). DO NOT DELETE this key without good reason. 
-
-If you wish to use this program to send emails from some other domain, you will need a new Sendgrid account and API key.
-
-You will need to set an environment variable to point the program to the API key file. Edit your ~/.bashrc file to include the following line:
-
+#### Viewing a database
+To view the contents of a database, the use the "show" action. For example:
 ```bash
-export SENDGRID_API_KEY=/full/path/to/taRemind/sendgrid_api_key.txt
+taremind.py show meetings
 ```
-
-Be sure to add the location of the program to PATH:
-
+#### Adding to a database
+To add to a database, use the "add" action. For example:
 ```bash
-export PATH=$PATH:/full/path/to/taRemind
+taremind.py add contact
 ```
+#### Deleting from a database
+To delete information from a database, use the "delete" action. For example:
+```bash
+taremind.py delete contact
+```
+#### Editing contents of a database
+To edit information in a database, use the "edit" action. For example:
+```bash
+taremind.py edit reminder
+```
+In addition to these databases, the program can also manage meeting participants. Meeting participation is an attribute of each contact, but the information can be accessed in a way that is consistent with the previous syntax.
+#### View meeting participants
+```bash
+taremind.py show participants
+```
+This command will give the user two options. You can either view all the participants for a particular meeting, or all the meetings for a particular participant.
 
-(Or edit the file containing PATH to include /full/path/to/taRemind. For ubuntu 20.0.4 this file is /etc/environment)
-	
-## Usage:
+#### Assign a participant
+```bash
+taremind.py assign
+```
+Then follow the prompts. Contacts can be assigned to multiple meetings at the same time.
+#### Release a participant
+```bash
+taremind.py release
+```
+Then follow the prompts. Contacts can be released from multiple meetings at the same time.
+
+#### Start the scheduler
+The final action is "start"
+```bash
+taremind.py start
+```
+This command tells the scheduler to 'activate' all reminders. This command is typically called by Supervisord, a service that runs the process as a background daemon. If the program is properly configured, the user shouldn't need to run this command manually.
+
+## Help
 
 See 
 ```bash
-taRemind.py --help
+taremind.py --help
 ```
-	
-## Design:
 
-Contacts and meetings are stored in separate databases in JSON format. These databases are built, queried, and edited using tinyDB. The databases are initialized by the 'contacts/\_\_init\_\_.py' and 'meetings/\_\_init\_\_.py' scripts.
-
-Currently, there are classes for Contacts and Meetings.
-The attributes of the Contact class are:
-
-* First name
-
-* Last name
-
-* Email address
-
-* Position
-
-The attributes of the Meeting class are:
-
-* Meeting name
-	    
-* Meeting day
-	    
-* Meeting time
-	    
-* Zoom link
-	    
-* Passcode (optional. Use --passcode if desired.)
-	    
-* Position
-	    
-Note that both classes have a 'position' attribute. This is how values will typically be accessed and modified.
-
-For example:
+Database names can be abbreviated to save typing. For example,
 ```bash
-taRemind.py meetings assign 8 4
+taremind.py show c
 ```
+will print the contact book to the console.
 
-This line would assign contact #8 to meeting #4.
+## Authors
 
-## A good starting place:
+Zane Gerber
+zane.gerber@utah.edu
 
-The position number of a particular contact can be found by using:
+Originally designed for internal use by the Telescope Array Collaboration.
 
-```bash
-taRemind.py contacts show
-```
-	    
-The position number of a particular meeting can be found by using:
-	
-```bash
-taRemind.py meetings show
-```
+## License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details
 
