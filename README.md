@@ -36,7 +36,7 @@ The user can interact with each database through the command line. The syntax is
 ```bash
 taremind.py {action} {database}
 ```
-Available actions are:
+Available commands are:
 * show
 * add
 * delete
@@ -48,22 +48,22 @@ Available databases are:
 * reminders
 
 #### Viewing a database
-To view the contents of a database, the use the "show" action. For example:
+To view the contents of a database, the use the "show" command. For example:
 ```bash
 taremind.py show meetings
 ```
 #### Adding to a database
-To add to a database, use the "add" action. For example:
+To add to a database, use the "add" command. For example:
 ```bash
 taremind.py add contact
 ```
 #### Deleting from a database
-To delete information from a database, use the "delete" action. For example:
+To delete information from a database, use the "delete" command. For example:
 ```bash
 taremind.py delete contact
 ```
 #### Editing contents of a database
-To edit information in a database, use the "edit" action. For example:
+To edit information in a database, use the "edit" command. For example:
 ```bash
 taremind.py edit reminder
 ```
@@ -86,7 +86,7 @@ taremind.py release
 Then follow the prompts. Contacts can be released from multiple meetings at the same time.
 
 #### Start the scheduler
-The final action is "start"
+The final command is "start"
 ```bash
 taremind.py start
 ```
